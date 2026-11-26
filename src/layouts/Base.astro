@@ -1,0 +1,32 @@
+---
+import site from '../../data/site.json';
+const { title, description } = Astro.props;
+const fullTitle = title ? `${title}｜${site.name}` : site.name;
+---
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description ?? site.description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <style is:global>
+      :root { --fg:#1f2328; --muted:#59636e; --bg:#fff; --card:#f6f8fa; --accent:#ee4d2d; }
+      @media (prefers-color-scheme: dark) { :root { --fg:#e6edf3; --muted:#9198a1; --bg:#0d1117; --card:#161b22; } }
+      body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.75 system-ui, "PingFang TC", "Noto Sans TC", sans-serif; }
+      main, header, footer { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+      header { padding-top: 16px; } header a { color: inherit; text-decoration: none; font-weight: 700; }
+      a { color: var(--accent); }
+      footer { color: var(--muted); font-size: 14px; padding: 32px 16px; }
+      img { max-width: 100%; height: auto; }
+    </style>
+  </head>
+  <body>
+    <header><a href="/">{site.name}</a></header>
+    <main><slot /></main>
+    <footer>
+      本站含聯盟行銷連結，透過連結購買我們可能獲得分潤，不影響你的售價。<a href="/disclosure/">揭露聲明</a>
+    </footer>
+  </body>
+</html>

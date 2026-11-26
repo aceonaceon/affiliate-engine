@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getCollection, render } from 'astro:content';
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', (p) => !p.data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const updated = post.data.updatedAt ?? post.data.publishedAt;
+---
+<Base title={post.data.title} description={post.data.description}>
+  <article>
+    <h1>{post.data.title}</h1>
+    <p><small>更新於 {updated.toISOString().slice(0, 10)}</small></p>
+    <Content />
+    {post.data.products.length > 0 && <h2>本文提到的商品</h2>}
+    {post.data.products.map((id) => <ProductCard id={id} />)}
+  </article>
+</Base>

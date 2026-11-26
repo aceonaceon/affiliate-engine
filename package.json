@@ -1,0 +1,17 @@
+{
+  "name": "affiliate-engine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check:data": "node scripts/check-data.mjs",
+    "report:daily": "node scripts/daily-report.mjs",
+    "test": "node scripts/check-data.mjs && astro build"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.6",
+    "astro": "^7.4.13",
+    "google-auth-library": "^9.15.1"
+  }
+}

@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import site from '../../data/site.json';
+const posts = (await getCollection('posts', (p) => !p.data.draft))
+  .sort((a, b) => +b.data.publishedAt - +a.data.publishedAt);
+---
+<Base>
+  <h1>{site.name}</h1>
+  <p>{site.description}</p>
+  <ul>{posts.map((p) => <li><a href={`/${p.id}/`}>{p.data.title}</a></li>)}</ul>
+</Base>

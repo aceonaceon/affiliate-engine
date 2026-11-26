@@ -1,0 +1,15 @@
+[
+  {
+    "id": "example-hook-01",
+    "platform": "shopee",
+    "name": "（範例）免釘無痕掛勾 10 入",
+    "url": "https://s.shopee.tw/XXXXXXXX",
+    "image": "https://cf.shopee.tw/file/XXXXXXXX",
+    "price": 199,
+    "commissionRate": 0.08,
+    "inStock": true,
+    "checkedAt": "2026-11-27",
+    "pros": ["不傷牆面，退租可撕"],
+    "cons": ["磁磚以外的粗糙牆面黏不牢"]
+  }
+]

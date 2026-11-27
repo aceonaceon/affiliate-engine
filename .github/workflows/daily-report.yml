@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  id-token: write # keyless Google auth (Workload Identity Federation)
 jobs:
   report:
     runs-on: ubuntu-latest
@@ -15,9 +16,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - uses: google-github-actions/auth@v2
+        if: vars.GCP_WIF_PROVIDER != ''
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
       - run: npm run report:daily
         env:
-          GOOGLE_SA_JSON: ${{ secrets.GOOGLE_SA_JSON }}
           GSC_SITE: ${{ vars.GSC_SITE }}
           GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}

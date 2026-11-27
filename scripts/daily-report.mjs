@@ -1,5 +1,6 @@
 // Morning report. Deterministic data pulls only; the AI reads reports/<date>.md and decides what to change.
-// Env: GOOGLE_SA_JSON (service account JSON), GSC_SITE (e.g. sc-domain:aceonhuang.com), GA4_PROPERTY_ID,
+// Env: Google auth via GOOGLE_APPLICATION_CREDENTIALS (keyless, set by google-github-actions/auth in CI)
+//      or GOOGLE_SA_JSON (service account key JSON, local use), GSC_SITE (e.g. sc-domain:aceonhuang.com), GA4_PROPERTY_ID,
 //      SHOPEE_APP_ID, SHOPEE_APP_SECRET, SHOPEE_API_URL (verify the TW endpoint in the affiliate console).
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -9,13 +10,14 @@ const today = new Date().toISOString().slice(0, 10);
 const daysAgo = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
 const out = [`# 晨報 ${today}`, ''];
 const products = JSON.parse(fs.readFileSync('data/products.json', 'utf8'));
+const hasGoogle = Boolean(process.env.GOOGLE_SA_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS);
 const site = JSON.parse(fs.readFileSync('data/site.json', 'utf8'));
 // The GSC domain property and GA4 property can also hold other sites on aceonhuang.com; keep only this site's host.
 const host = new URL(site.url).host;
 
 async function google(url, body) {
   const auth = new GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_SA_JSON),
+    ...(process.env.GOOGLE_SA_JSON ? { credentials: JSON.parse(process.env.GOOGLE_SA_JSON) } : {}),
     scopes: [
       'https://www.googleapis.com/auth/webmasters.readonly',
       'https://www.googleapis.com/auth/analytics.readonly',
@@ -27,8 +29,8 @@ async function google(url, body) {
 }
 
 async function searchConsole() {
-  if (!process.env.GOOGLE_SA_JSON || !process.env.GSC_SITE) {
-    out.push('## Search Console', '未設定 GOOGLE_SA_JSON / GSC_SITE，略過。', '');
+  if (!hasGoogle || !process.env.GSC_SITE) {
+    out.push('## Search Console', '未設定 Google 驗證或 GSC_SITE，略過。', '');
     return;
   }
   const url = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(process.env.GSC_SITE)}/searchAnalytics/query`;
@@ -50,7 +52,7 @@ async function searchConsole() {
 }
 
 async function analytics() {
-  if (!process.env.GOOGLE_SA_JSON || !process.env.GA4_PROPERTY_ID) {
+  if (!hasGoogle || !process.env.GA4_PROPERTY_ID) {
     out.push('## GA4', '未設定 GA4_PROPERTY_ID，略過。', '');
     return;
   }

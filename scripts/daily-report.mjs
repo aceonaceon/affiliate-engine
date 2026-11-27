@@ -10,6 +10,8 @@ const daysAgo = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0, 1
 const out = [`# 晨報 ${today}`, ''];
 const products = JSON.parse(fs.readFileSync('data/products.json', 'utf8'));
 const site = JSON.parse(fs.readFileSync('data/site.json', 'utf8'));
+// The GSC domain property and GA4 property can also hold other sites on aceonhuang.com; keep only this site's host.
+const host = new URL(site.url).host;
 
 async function google(url, body) {
   const auth = new GoogleAuth({
@@ -30,7 +32,9 @@ async function searchConsole() {
     return;
   }
   const url = `https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(process.env.GSC_SITE)}/searchAnalytics/query`;
-  const data = await google(url, { startDate: daysAgo(30), endDate: daysAgo(2), dimensions: ['query', 'page'], rowLimit: 1000 });
+  const data = await google(url, { startDate: daysAgo(30), endDate: daysAgo(2), dimensions: ['query', 'page'], rowLimit: 1000,
+    dimensionFilterGroups: [{ filters: [{ dimension: 'page', operator: 'contains', expression: `//${host}/` }] }],
+  });
   const rows = data.rows ?? [];
   const sum = (k) => rows.reduce((a, r) => a + r[k], 0);
   out.push('## Search Console（近 28 天）', `曝光 ${sum('impressions')}、點擊 ${sum('clicks')}`, '');
@@ -55,7 +59,14 @@ async function analytics() {
     dateRanges: [{ startDate: '28daysAgo', endDate: 'yesterday' }],
     dimensions: [{ name: 'pagePath' }, { name: 'eventName' }],
     metrics: [{ name: 'eventCount' }],
-    dimensionFilter: { filter: { fieldName: 'eventName', inListFilter: { values: ['page_view', 'click'] } } },
+    dimensionFilter: {
+      andGroup: {
+        expressions: [
+          { filter: { fieldName: 'eventName', inListFilter: { values: ['page_view', 'click'] } } },
+          { filter: { fieldName: 'hostName', stringFilter: { matchType: 'EXACT', value: host } } },
+        ],
+      },
+    },
     limit: 1000,
   });
   const pages = {};

@@ -11,6 +11,17 @@ const fullTitle = title ? `${title}｜${site.name}` : site.name;
     <title>{fullTitle}</title>
     <meta name="description" content={description ?? site.description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    {site.ga4MeasurementId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${site.ga4MeasurementId}`}></script>
+        <script is:inline define:vars={{ id: site.ga4MeasurementId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', id);
+        </script>
+      </>
+    )}
     <style is:global>
       :root { --fg:#1f2328; --muted:#59636e; --bg:#fff; --card:#f6f8fa; --accent:#ee4d2d; }
       @media (prefers-color-scheme: dark) { :root { --fg:#e6edf3; --muted:#9198a1; --bg:#0d1117; --card:#161b22; } }

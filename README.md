@@ -20,7 +20,7 @@ npm run dev
 ## 一次性設定（需要 Jason）
 
 1. **Cloudflare Pages**：Workers & Pages → Create → Pages → Connect to Git → 選這個 repo。
-   Build command 填 `npm run build`，output 填 `dist`。之後在 Custom domains 加上 `aceonhuang.com`。
+   Build command 填 `npm run build`，output 填 `dist`。之後在 Custom domains 加上 `shop.aceonhuang.com`（主網域與 www 已有其他網站，不要動）。
 2. **GitHub Secrets / Variables**（Settings → Secrets and variables → Actions）：
    - Secret `GOOGLE_SA_JSON`：Google Cloud 服務帳號的 JSON 金鑰，需啟用 Search Console API 與 Analytics Data API。
      要把服務帳號的 email 加進 Search Console（使用者，權限選「完整」）和 GA4（檢視者）。
@@ -28,4 +28,6 @@ npm run dev
    - Variable `GA4_PROPERTY_ID`：GA4 資源編號（純數字）
    - Secret `SHOPEE_APP_ID`、`SHOPEE_APP_SECRET`：到蝦皮分潤計畫後台申請 Open API。
      如果台灣端點不是 `https://open-api.affiliate.shopee.tw/graphql`，另外加 Variable `SHOPEE_API_URL`。
-3. 在 GA4 確認「加強型評估」的外連點擊有開啟，晨報要靠它判斷哪些頁面沒人點連結。
+3. GA4 為 `shop.aceonhuang.com` 建一個網頁資料串流，把評估 ID（G-…）填進 `data/site.json` 的 `ga4MeasurementId`。
+   晨報會用 hostName 只取這個站的數據，GSC 也只取這個子網域的頁面。
+4. 在 GA4 確認「加強型評估」的外連點擊有開啟，晨報要靠它判斷哪些頁面沒人點連結。

@@ -26,7 +26,7 @@ npm run dev
      - Variable `GCP_WIF_PROVIDER`：`projects/<專案編號>/locations/global/workloadIdentityPools/github/providers/github`
      - Variable `GCP_SERVICE_ACCOUNT`：服務帳號 email，需啟用 Search Console API 與 Analytics Data API。
      - 服務帳號要能被這個 repo 的 Actions 冒用（`roles/iam.workloadIdentityUser`，限定 `attribute.repository/aceonaceon/affiliate-engine`）。
-     - 把服務帳號 email 加進 Search Console（使用者，權限選「完整」）和 GA4（檢視者）。
+     - 把服務帳號 email 加進 Search Console（使用者，權限選「限制」即可唯讀）和 GA4（檢視者）。
      - 本機測試可改設環境變數 `GOOGLE_SA_JSON`（服務帳號金鑰）。
    - Variable `GSC_SITE`：例如 `sc-domain:aceonhuang.com`
    - Variable `GA4_PROPERTY_ID`：GA4 資源編號（純數字）
